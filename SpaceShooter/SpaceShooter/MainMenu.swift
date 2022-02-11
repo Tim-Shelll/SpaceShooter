@@ -16,8 +16,8 @@ class MainMenu: SKScene {
     
     override func didMove(to view: SKView) {
         starField = SKEmitterNode(fileNamed: "Starfield")
-        starField.position = CGPoint(x: UIScreen.main.bounds.width / 2, y: UIScreen.main.bounds.height + 20)
-        starField.advanceSimulationTime(10)
+        starField.position = CGPoint(x: 0, y: UIScreen.main.bounds.height + 20)
+        starField.advanceSimulationTime(5)
         self.addChild(starField)
     
         starField.zPosition = -1

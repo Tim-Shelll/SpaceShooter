@@ -32,11 +32,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     let motionManager = CMMotionManager()
     var xAccelerate:CGFloat = 0
     
-    var Paused = true
-    
     func pauseResume() {
+        gameTimer?.invalidate()
+        gameTimer = nil
         let transition = SKTransition.flipVertical(withDuration: 0.5)
-        let gameScene = MainMenu(size: UIScreen.main.bounds.size)
+        let gameScene = GameOverScene(size: UIScreen.main.bounds.size)
         self.view?.presentScene(gameScene, transition: transition)
     }
     
@@ -73,6 +73,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         pauseBtnNode.size = CGSize(width: 50, height: 50)
         pauseBtnNode.position = CGPoint(x: UIScreen.main.bounds.width - 50, y: UIScreen.main.bounds.height - 50)
         pauseBtnNode.name = "pause"
+        
         self.addChild(scoreLabel)
         self.addChild(pauseBtnNode)
         
@@ -114,6 +115,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         else if player.position.x > UIScreen.main.bounds.width {
             player.position = CGPoint(x: player.size.width, y: player.position.y)
         }
+        if player.position.y < (self.size.height / 6) {
+            player.position = CGPoint(x: player.position.x, y: self.size.height / 6)
+        }
     }
     
     func didBegin(_ contact: SKPhysicsContact) {
@@ -126,10 +130,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         else if ((firstBody.categoryBitMask == alienCategory) && (secondBody.categoryBitMask == playerCategory) || (firstBody.categoryBitMask == playerCategory) && (secondBody.categoryBitMask == alienCategory)) {
             collisionWithPlayer(enemy: firstBody.node as! SKSpriteNode, player: secondBody.node as! SKSpriteNode )
         }
-        
-//        if (alienBody.categoryBitMask & alienCategory) != 0 && (bulletBody.categoryBitMask & bulletCategory) != 0 {
-//            collisionElements(bulletNode: bulletBody.node as! SKSpriteNode, alienNode: alienBody.node as! SKSpriteNode)
-//        }
     }
     
     func collisionElements (bulletNode:SKSpriteNode, alienNode:SKSpriteNode) {
@@ -155,7 +155,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         let transition = SKTransition.flipVertical(withDuration: 0.5)
         let gameScene = GameOverScene(size: UIScreen.main.bounds.size)
-        self.view?.presentScene(gameScene, transition: transition)    }
+        self.view?.presentScene(gameScene, transition: transition)
+        scoreLabel.removeFromParent()
+    }
     
     @objc func addAlien() {
         aliens = GKRandomSource.sharedRandom().arrayByShufflingObjects(in: aliens) as! [String]
